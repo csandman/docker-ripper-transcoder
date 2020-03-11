@@ -11,9 +11,9 @@ echo "$(date "+%d.%m.%Y %T") : Starting Ripper. Optical Discs will be detected a
 # Finished Rips are moved to a "finished" folder in it's respective STORAGE folder
 SEPARATERAWFINISH="true"
 
+TRANSCODE="true"
+
 # Paths
-STORAGE_CD="/out/Ripper/CD"
-STORAGE_DATA="/out/Ripper/DATA"
 STORAGE_DVD="/out/Ripper/DVD"
 STORAGE_BD="/out/Ripper/BluRay"
 DRIVE="/dev/sr0"
@@ -80,11 +80,15 @@ if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' ]; then
  else
     # BluRay/MKV
     echo "$(date "+%d.%m.%Y %T") : BluRay detected: Saving MKV"
-    makemkvcon --profile=/config/default.mmcp.xml -r --decrypt --minlength=600 mkv disc:"$BLURAYNUM" all "$BDPATH" >> $LOGFILE 2>&1
+    makemkvcon --profile=/config/flac.mmcp.xml -r --decrypt --minlength=15 mkv disc:"$BLURAYNUM" all "$BDPATH" >> $LOGFILE 2>&1
  fi
  if [ "$SEPARATERAWFINISH" = 'true' ]; then
     BDFINISH="$STORAGE_BD"/finished/
     mv -v "$BDPATH" "$BDFINISH"
+ fi
+ if [ "$TRANSCODE" = 'true' ]; then
+    BDTRANSCODE="$STORAGE_BD"/transcode/
+    batch-transcode-video --crop 1 --diff --quiet --input "$BDFINISH" --output "$BDTRANSCODE" -- --no-auto-burn --add-subtitle all >> $LOGFILE 2>&1
  fi
  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
  eject $DRIVE >> $LOGFILE 2>&1
@@ -104,11 +108,15 @@ if [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
  else
     # DVD/MKV
     echo "$(date "+%d.%m.%Y %T") : DVD detected: Saving MKV"
-    makemkvcon --profile=/config/default.mmcp.xml -r --decrypt --minlength=600 mkv disc:"$DVDNUM" all "$DVDPATH" >> $LOGFILE 2>&1
+    makemkvcon --profile=/config/flac.mmcp.xml -r --decrypt --minlength=15 mkv disc:"$DVDNUM" all "$DVDPATH" >> $LOGFILE 2>&1
  fi
  if [ "$SEPARATERAWFINISH" = 'true' ]; then
     DVDFINISH="$STORAGE_DVD"/finished/
     mv -v "$DVDPATH" "$DVDFINISH" 
+ fi
+ if [ "$TRANSCODE" = 'true' ]; then
+    DVDTRANSCODE="$STORAGE_DVD"/transcode/
+    batch-transcode-video --crop 1 --diff --quiet --input "$DVDFINISH" --output "$DVDTRANSCODE" -- --no-auto-burn --add-subtitle all >> $LOGFILE 2>&1
  fi
  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
  eject $DRIVE >> $LOGFILE 2>&1
@@ -116,40 +124,6 @@ if [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
  chown -R nobody:users "$STORAGE_DVD" && chmod -R g+rw "$STORAGE_DVD"
 fi
 
-if [ "$CD1" = 'DRV:0,2,999,0,"' ]; then
- if [ "$CD2" = '","","'$DRIVE'"' ]; then
-  ALT_RIP="${RIPPER_DIR}/CDrip.sh"
-  if [[ -f $ALT_RIP && -x $ALT_RIP ]]; then
-     echo "$(date "+%d.%m.%Y %T") : CD detected: Executing $ALT_RIP"
-     $ALT_RIP "$DRIVE" "$STORAGE_CD" "$LOGFILE"
-  else
-     # MP3 & FLAC
-     echo "$(date "+%d.%m.%Y %T") : CD detected: Saving MP3 and FLAC"
-     /usr/bin/ripit -d "$DRIVE" -c 0,2 -W -o "$STORAGE_CD" -b 320 --comment cddbid --playlist 0 -D '"$suffix/$artist/$album"'  --infolog "/log/autorip_"$LOGFILE"" -Z 2 -O y --uppercasefirst --nointeraction >> $LOGFILE 2>&1
-  fi
-  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
-  eject $DRIVE >> $LOGFILE 2>&1
-  # permissions
-  chown -R nobody:users "$STORAGE_CD" && chmod -R g+rw "$STORAGE_CD"
- else
-  DISKLABEL=`echo $INFO | grep $DRIVE | grep -o -P '(?<=",").*(?=",")'`  
-  ISOPATH="$STORAGE_DATA"/"$DISKLABEL"/"$DISKLABEL".iso
-  mkdir -p "$STORAGE_DATA"/"$DISKLABEL"
-  ALT_RIP="${RIPPER_DIR}/DATArip.sh"
-  if [[ -f $ALT_RIP && -x $ALT_RIP ]]; then
-     echo "$(date "+%d.%m.%Y %T") : Data-Disk detected: Executing $ALT_RIP"
-     $ALT_RIP "$DRIVE" "$ISOPATH" "$LOGFILE"
-  else
-     # ISO
-     echo "$(date "+%d.%m.%Y %T") : Data-Disk detected: Saving ISO"
-     ddrescue $DRIVE $ISOPATH >> $LOGFILE 2>&1
-  fi
-  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
-  eject $DRIVE >> $LOGFILE 2>&1
-  # permissions
-  chown -R nobody:users "$STORAGE_DATA" && chmod -R g+rw "$STORAGE_DATA"
- fi
-fi
 # Wait a minute
 sleep 1m
 done
