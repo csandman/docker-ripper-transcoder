@@ -1,9 +1,29 @@
-# docker-ripper-transcoder
+# docker-ripper-transcoder (WIP)
 
 This container will detect optical disks by their type and rip them
 automatically using MakeMKV and then transcode them using transcode-video.
 
-## Docker run
+## Tools and Ideas
+
+This docker container is based on many different tools combined to make the
+ideal ripping and transcoding machine
+
+-   [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool
+    to automatically rip movie files with make mkv
+    -   [MakeMKV Profiles](https://gist.github.com/csandman/5638a54730869cf4addf3df43f7fc845) -
+        Use FLAC profile for initial rip
+    -   Download all video tracks (probably with 30 second cutoff OR the
+        shortest extra length from dvdcompare)
+-   [video_transcoding](https://github.com/donmelton/video_transcoding) - A
+    library of tools to transcode videos to a reasonable format using handbrake
+    -   [docker](https://hub.docker.com/r/ntodd/video-transcoding/) - A docker
+        container containing the video transcoding library
+    -   [batch-transcode-video](https://github.com/nwronski/batch-transcode-video) -
+        A nodejs application for batch transcoding the movie and all extras
+
+## Setup
+
+#### Docker run
 
 ```
 docker run -d \
@@ -14,7 +34,7 @@ docker run -d \
   rix1337/docker-ripper
 ```
 
-## Docker compose
+#### Docker compose
 
 ```
 version: '3.4'
@@ -27,6 +47,7 @@ services:
       - /media/rips/:/out:rw
     devices:
       - /dev/sr0:/dev/sr0
+```
 
 ## Tools and Ideas
 
@@ -68,19 +89,6 @@ may stop running at any time.
 To add your purchased license key to MakeMKV/Ripper add it to the
 `enter-your-key-then-rename-to.settings.conf` at `app_Key = "`**[ENTER KEY
 HERE]**`"` and rename the file to settings.conf.
-
-# Docker run
-
-```
-
-docker run -d \
- --name="Ripper" \
- -v /path/to/config/:/config:rw \
- -v /path/to/rips/:/out:rw \
- --device=/dev/sr0:/dev/sr0 \
- rix1337/docker-ripper
-
-```
 
 # FAQ
 
@@ -158,4 +166,3 @@ not responsible if anything breaks. For more information see
     -   /\<output-path\>/\<movie-name\>/
         -   /\<featurettes\>/
         -   /\<unidentified\>/
-```
