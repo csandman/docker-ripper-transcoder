@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RIPPER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-LOGFILE="/config/Ripper.log"
+LOGFILE="/config/rt.log"
 
 # Startup Info
 echo "$(date "+%d.%m.%Y %T") : Starting Ripper. Optical Discs will be detected and ripped within 60 seconds."
@@ -14,8 +14,8 @@ SEPARATERAWFINISH="true"
 TRANSCODE="true"
 
 # Paths
-STORAGE_DVD="/out/Ripper/DVD"
-STORAGE_BD="/out/Ripper/BluRay"
+STORAGE_DVD="/out/dvd"
+STORAGE_BD="/out/bluray"
 DRIVE="/dev/sr0"
 
 BAD_THRESHOLD=5
