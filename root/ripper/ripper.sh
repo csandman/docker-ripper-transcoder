@@ -9,13 +9,13 @@ echo "$(date "+%d.%m.%Y %T") : Starting Ripper. Optical Discs will be detected a
 # Separate Raw Rip and Finished Rip Folders for DVDs and BluRays
 # Raw Rips go in the usual folder structure
 # Finished Rips are moved to a "finished" folder in it's respective STORAGE folder
-SEPARATERAWFINISH="true"
 
 TRANSCODE="true"
 
 # Paths
-STORAGE_DVD="/out/dvd"
-STORAGE_BD="/out/bluray"
+STORAGE_INCOMPLETE="/out/incomplete"
+STORAGE_RIPS="/out/dvd"
+STORAGE_TRANSCODES="/out/transcodes"
 DRIVE="/dev/sr0"
 
 BAD_THRESHOLD=5
@@ -70,7 +70,7 @@ fi
 
 if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' ]; then
  DISKLABEL=`echo $INFO | grep -o -P '(?<=",").*(?=",")'`
- BDPATH="$STORAGE_BD"/"$DISKLABEL"
+ BDPATH="$STORAGE_INCOMPLETE"/"$DISKLABEL"
  BLURAYNUM=`echo $INFO | grep $DRIVE | cut -c5`
  mkdir -p "$BDPATH"
  ALT_RIP="${RIPPER_DIR}/BLURAYrip.sh"
@@ -82,23 +82,20 @@ if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' ]; then
     echo "$(date "+%d.%m.%Y %T") : BluRay detected: Saving MKV"
     makemkvcon --profile=/config/flac.mmcp.xml -r --decrypt --minlength=15 mkv disc:"$BLURAYNUM" all "$BDPATH" >> $LOGFILE 2>&1
  fi
- if [ "$SEPARATERAWFINISH" = 'true' ]; then
-    BDFINISH="$STORAGE_BD"/finished/
-    mv -v "$BDPATH" "$BDFINISH"
- fi
+ # Move ripped movie
+ mv -v "$BDPATH" "$STORAGE_RIPS"
  if [ "$TRANSCODE" = 'true' ]; then
-    BDTRANSCODE="$STORAGE_BD"/transcode/
-    batch-transcode-video --crop 1 --diff --quiet --input "$BDFINISH" --output "$BDTRANSCODE" -- --no-auto-burn --add-subtitle all >> $LOGFILE 2>&1
+    batch-transcode-video --crop 1 --diff --quiet --input "$STORAGE_RIPS"/"$DISKLABEL" --output "$STORAGE_TRANSCODES"/"$DISKLABEL" -- --no-auto-burn --add-subtitle all >> $LOGFILE 2>&1
  fi
  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
  eject $DRIVE >> $LOGFILE 2>&1
  # permissions
- chown -R nobody:users "$STORAGE_BD" && chmod -R g+rw "$STORAGE_BD"
+ chown -R nobody:users /out && chmod -R g+rw /out
 fi
 
 if [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
  DISKLABEL=`echo $INFO | grep -o -P '(?<=",").*(?=",")'` 
- DVDPATH="$STORAGE_DVD"/"$DISKLABEL"
+ DVDPATH="$STORAGE_INCOMPLETE"/"$DISKLABEL"
  DVDNUM=`echo $INFO | grep $DRIVE | cut -c5`
  mkdir -p "$DVDPATH"
  ALT_RIP="${RIPPER_DIR}/DVDrip.sh"
@@ -110,18 +107,14 @@ if [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
     echo "$(date "+%d.%m.%Y %T") : DVD detected: Saving MKV"
     makemkvcon --profile=/config/flac.mmcp.xml -r --decrypt --minlength=15 mkv disc:"$DVDNUM" all "$DVDPATH" >> $LOGFILE 2>&1
  fi
- if [ "$SEPARATERAWFINISH" = 'true' ]; then
-    DVDFINISH="$STORAGE_DVD"/finished/
-    mv -v "$DVDPATH" "$DVDFINISH" 
- fi
+ mv -v "$DVDPATH" "$STORAGE_RIPS"
  if [ "$TRANSCODE" = 'true' ]; then
-    DVDTRANSCODE="$STORAGE_DVD"/transcode/
-    batch-transcode-video --crop 1 --diff --quiet --input "$DVDFINISH" --output "$DVDTRANSCODE" -- --no-auto-burn --add-subtitle all >> $LOGFILE 2>&1
+    batch-transcode-video --crop 1 --diff --quiet --input "$STORAGE_RIPS"/"$DISKLABEL" --output "$STORAGE_TRANSCODES"/"$DISKLABEL" -- --no-auto-burn --add-subtitle all >> $LOGFILE 2>&1
  fi
  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
  eject $DRIVE >> $LOGFILE 2>&1
  # permissions
- chown -R nobody:users "$STORAGE_DVD" && chmod -R g+rw "$STORAGE_DVD"
+ chown -R nobody:users /out && chmod -R g+rw /out
 fi
 
 # Wait a minute
