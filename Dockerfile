@@ -9,7 +9,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
 # Use baseimage-docker's init system
-CMD ["/sbin/my_init"]
+# CMD ["/sbin/my_init"]
 
 # Configure user nobody to match unRAID's settings
 RUN \
