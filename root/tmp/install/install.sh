@@ -49,7 +49,6 @@ pushd /tmp/sources/makemkv-bin-$VERSION
 /bin/echo -e "yes" | make install
 popd
 
-
 #####################################
 #	Remove unneeded packages		      #
 #									                  #
