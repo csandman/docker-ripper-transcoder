@@ -5,19 +5,16 @@ if [[ ! -f /config/ripper.sh ]]; then
   cp /ripper/ripper.sh /config/ripper.sh
 fi
 
-# copy flac profile
-if [[ ! -f /config/flac.mmcp.xml ]]; then
-  cp /ripper/flac.mmcp.xml /config/flac.mmcp.xml
-fi
-
 # copy default settings
 if [[ ! -f /config/settings.conf ]] && [[ ! -f /config/enter-your-key-then-rename-to.settings.conf ]]; then
   cp -f /ripper/settings.conf /config/
   mv /config/settings.conf /config/enter-your-key-then-rename-to.settings.conf
 fi
 
-# fetching MakeMKV beta key
-KEY=$(curl --silent 'https://www.makemkv.com/forum/viewtopic.php?f=5&t=1053' | grep -oP 'T-[\w\d@]{66}')
+# copy default profile
+if [[ ! -f /config/profile.mmcp.xml ]]; then
+  cp /ripper/profile.mmcp.xml /config/profile.mmcp.xml
+fi
 
 # move settings.conf, if found
 mkdir -p /root/.MakeMKV
@@ -25,6 +22,8 @@ if [[ -f /config/settings.conf ]]; then
   echo "Found settings.conf. Replacing beta key file."
   cp -f /config/settings.conf /root/.MakeMKV/
 elif ! [ "$KEY" = '' ]; then
+  # fetching MakeMKV beta key
+  KEY=$(curl --silent 'https://www.makemkv.com/forum/viewtopic.php?f=5&t=1053' | grep -oP 'T-[\w\d@]{66}')
   echo "Using MakeMKV beta key: $KEY"
   echo app_Key = "\"$KEY"\" >/root/.MakeMKV/settings.conf
 fi

@@ -1,6 +1,6 @@
-# docker-ripper-transcoder (WIP)
+# docker-ripper-transcoder
 
-This container will detect optical disks by their type and rip them
+This container will detect DVDs and BluRays by their type and rip them
 automatically using MakeMKV and then transcode them using transcode-video.
 
 ## Tools and Ideas
@@ -8,18 +8,18 @@ automatically using MakeMKV and then transcode them using transcode-video.
 This docker container is based on many different tools combined to make the
 ideal ripping and transcoding machine
 
--   [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool
-    to automatically rip movie files with make mkv
-    -   [MakeMKV Profiles](https://gist.github.com/csandman/5638a54730869cf4addf3df43f7fc845) -
-        Use FLAC profile for initial rip
-    -   Download all video tracks (probably with 30 second cutoff OR the
-        shortest extra length from dvdcompare)
--   [video_transcoding](https://github.com/donmelton/video_transcoding) - A
-    library of tools to transcode videos to a reasonable format using handbrake
-    -   [docker](https://hub.docker.com/r/ntodd/video-transcoding/) - A docker
-        container containing the video transcoding library
-    -   [batch-transcode-video](https://github.com/nwronski/batch-transcode-video) -
-        A nodejs application for batch transcoding the movie and all extras
+- [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool
+  to automatically rip movie files with make mkv
+  - [MakeMKV Profiles](https://gist.github.com/csandman/5638a54730869cf4addf3df43f7fc845) -
+    Use FLAC profile for initial rip
+  - Download all video tracks (probably with 30 second cutoff OR the
+    shortest extra length from dvdcompare)
+- [video_transcoding](https://github.com/donmelton/video_transcoding) - A
+  library of tools to transcode videos to a reasonable format using handbrake
+  - [docker](https://hub.docker.com/r/ntodd/video-transcoding/) - A docker
+    container containing the video transcoding library
+  - [batch-transcode-video](https://github.com/nwronski/batch-transcode-video) -
+    A nodejs application for batch transcoding the movie and all extras
 
 ## Setup
 
@@ -51,26 +51,38 @@ services:
 
 ## Tools and Ideas
 
--   [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool
-    to automatically rip movie files with make mkv
-    -   [MakeMKV Profiles](https://gist.github.com/csandman/5638a54730869cf4addf3df43f7fc845) -
-        Use FLAC profile for initial rip
-    -   Download all video tracks (probably with 30 second cutoff OR the
-        shortest extra length from dvdcompare)
--   [http://www.dvdcompare.net/index.php](dvdcompare.net) - Build a web scraper
-    to parse the track lengths of each extra
-    -   Use something like mediainfo to get track length of each file in
-        extracted extras
-    -   Perhaps use metadata from the bluray disk to determine the
-        language/country for dvd compare
--   [Automatic Ripping Machine](https://github.com/automatic-ripping-machine/automatic-ripping-machine) -
-    Has some interesting tools for identifying the name and language of a movie
--   [video_transcoding](https://github.com/donmelton/video_transcoding) - A
-    library of tools to transcode videos to a reasonable format using handbrake
-    -   [docker](https://hub.docker.com/r/ntodd/video-transcoding/) - A docker
-        container containing the video transcoding library
-    -   [batch-transcode-video](https://github.com/nwronski/batch-transcode-video) -
-        A nodejs application for batch transcoding the movie and all extras
+- [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool
+  to automatically rip movie files with make mkv
+  - [MakeMKV Profiles](https://gist.github.com/csandman/5638a54730869cf4addf3df43f7fc845) -
+    Use FLAC profile for initial rip
+  - Download all video tracks (probably with 30 second cutoff OR the
+    shortest extra length from dvdcompare)
+- [http://www.dvdcompare.net/index.php](dvdcompare.net) - Build a web scraper
+  to parse the track lengths of each extra
+  - Use something like mediainfo to get track length of each file in
+    extracted extras
+  - Perhaps use metadata from the bluray disk to determine the
+    language/country for dvd compare
+- [Automatic Ripping Machine](https://github.com/automatic-ripping-machine/automatic-ripping-machine) -
+  Has some interesting tools for identifying the name and language of a movie
+- [video_transcoding](https://github.com/donmelton/video_transcoding) - A
+  library of tools to transcode videos to a reasonable format using handbrake
+  - [docker](https://hub.docker.com/r/ntodd/video-transcoding/) - A docker
+    container containing the video transcoding library
+  - [batch-transcode-video](https://github.com/nwronski/batch-transcode-video) -
+    A nodejs application for batch transcoding the movie and all extras
+- https://github.com/lasley/node-makemkv
+- https://www.reddit.com/r/DataHoarder/comments/9s6sln/if_the_words_tigole_featurettes_and_plex_mean/
+
+## Next Steps
+
+- Hit the [tvdb api](https://developers.themoviedb.org/3/search/search-movies) to find proper movie title and year
+- Rename folder to Movie Title (year)
+- Identify main movie file and rename to the same
+- Move all other tracks to a subfolder called 'Featurettes'
+- Identify extras based on their timestamps from dvdcompare.net
+  - Search for the movie using results from tvdb and parse all extras lengths
+  - match extras and rename files for all tracks searching the page in order
 
 # Output
 
@@ -145,24 +157,24 @@ not responsible if anything breaks. For more information see
 
 # Credits
 
--   [Idea based on Discbox by kingeek](http://kinggeek.co.uk/projects/item/61-discbox-linux-bash-script-to-automatically-rip-cds-dvds-and-blue-ray-with-multiple-optical-drives-and-no-user-intervention)
+- [Idea based on Discbox by kingeek](http://kinggeek.co.uk/projects/item/61-discbox-linux-bash-script-to-automatically-rip-cds-dvds-and-blue-ray-with-multiple-optical-drives-and-no-user-intervention)
 
-    Kingeek uses proper tools (like udev) to detect disk types. This is
-    impossible in docker right now. Hence, most of the work is done by MakeMKV
-    (see above).
+  Kingeek uses proper tools (like udev) to detect disk types. This is
+  impossible in docker right now. Hence, most of the work is done by MakeMKV
+  (see above).
 
--   [MakeMKV Setup by tobbenb](https://github.com/tobbenb/docker-containers)
+- [MakeMKV Setup by tobbenb](https://github.com/tobbenb/docker-containers)
 
--   [MakeMKV key/version fetcher by metalight](http://blog.metalight.dk/2016/03/makemkv-wrapper-with-auto-updater.html)
+- [MakeMKV key/version fetcher by metalight](http://blog.metalight.dk/2016/03/makemkv-wrapper-with-auto-updater.html)
 
 ## Custom Version
 
--   Combine the functionality of docker-ripper and transcode video
-    1. Automatically rip Blurays and DVDs, all tracks
-    2. Transcode video files using Don Melton's transcode-video tool
-    3. Pull extras names and length's from http://www.dvdcompare.net/index.php
-    -   Perhaps using some basic form of web scraper
-    4. Name video files using this information in the following structure
-    -   /\<output-path\>/\<movie-name\>/
-        -   /\<featurettes\>/
-        -   /\<unidentified\>/
+- Combine the functionality of docker-ripper and transcode video
+  1. Automatically rip Blurays and DVDs, all tracks
+  2. Transcode video files using Don Melton's transcode-video tool
+  3. Pull extras names and length's from http://www.dvdcompare.net/index.php
+  - Perhaps using some basic form of web scraper
+  4. Name video files using this information in the following structure
+  - /\<output-path\>/\<movie-name\>/
+    - /\<featurettes\>/
+    - /\<unidentified\>/
