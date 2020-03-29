@@ -21,6 +21,24 @@ ideal ripping and transcoding machine
   - [batch-transcode-video](https://github.com/nwronski/batch-transcode-video) -
     A nodejs application for batch transcoding the movie and all extras
 
+## Next Steps
+- Consolidate scripts for dvd/bluray
+- Add script for 
+- Hit the [tvdb api](https://developers.themoviedb.org/3/search/search-movies) to find proper movie title and year
+- Rename folder to Movie Title (year)
+- Identify main movie file and rename to the same
+- Move all other tracks to a subfolder called 'Featurettes'
+- Identify extras based on their timestamps from dvdcompare.net
+  - Search for the movie using results from tvdb and parse all extras lengths
+  - match extras and rename files for all tracks searching the page in order
+  - make a node cli tool with node to parse dvdcompare.net
+  - use [this script](https://superuser.com/questions/361329/how-can-i-get-the-length-of-a-video-file-from-the-console) to get the length of the movie file
+    - something like get-movie-extra-name --title="The Scrooge Mystery" --length=67
+- Add [environment variables](https://github.com/phusion/baseimage-docker#environment-variables) for custom options
+  - include subtitles
+  - use x265
+  - include extras
+
 ## Setup
 
 #### Docker run
@@ -73,16 +91,6 @@ services:
     A nodejs application for batch transcoding the movie and all extras
 - https://github.com/lasley/node-makemkv
 - https://www.reddit.com/r/DataHoarder/comments/9s6sln/if_the_words_tigole_featurettes_and_plex_mean/
-
-## Next Steps
-
-- Hit the [tvdb api](https://developers.themoviedb.org/3/search/search-movies) to find proper movie title and year
-- Rename folder to Movie Title (year)
-- Identify main movie file and rename to the same
-- Move all other tracks to a subfolder called 'Featurettes'
-- Identify extras based on their timestamps from dvdcompare.net
-  - Search for the movie using results from tvdb and parse all extras lengths
-  - match extras and rename files for all tracks searching the page in order
 
 # Output
 
