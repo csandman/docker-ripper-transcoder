@@ -66,46 +66,24 @@ while true; do
     echo "$(date "+%d.%m.%Y %T") : Disc still loading"
   fi
 
-  if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' ]; then
+  if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' || "$DVD" = 'DRV:0,2,999,1,"' ]; then
     DISK_LABEL=$(echo $INFO | grep -o -P '(?<=",").*(?=",")')
-    DISK_PATH="$STORAGE_RIPS"/"$DISK_LABEL"
+    RIP_PATH="$STORAGE_RIPS"/"$DISK_LABEL"
+    TRANSCODE_PATH="$STORAGE_TRANSCODES"/"$DISK_LABEL"
     DISK_NUM=$(echo $INFO | grep $DRIVE | cut -c5)
-    mkdir -p "$DISK_PATH"
-    ALT_RIP="${RIPPER_DIR}/BLURAYrip.sh"
+    mkdir -p "$RIP_PATH"
+    ALT_RIP="${RIPPER_DIR}/alt-rip.sh"
     if [[ -f $ALT_RIP && -x $ALT_RIP ]]; then
-      echo "$(date "+%d.%m.%Y %T") : BluRay detected: Executing $ALT_RIP"
-      $ALT_RIP "$DISK_NUM" "$DISK_PATH" >>$LOG_FILE 2>&1
+      echo "$(date "+%d.%m.%Y %T") : Disk detected: Executing $ALT_RIP"
+      $ALT_RIP "$DISK_NUM" "$RIP_PATH" >>$LOG_FILE 2>&1
     else
       # MKV
-      echo "$(date "+%d.%m.%Y %T") : BluRay detected: Saving MKV"
-      makemkvcon --profile=/config/profile.mmcp.xml --decrypt --minlength=15 mkv disc:"$DISK_NUM" all "$DISK_PATH" >>$LOG_FILE 2>&1
+      echo "$(date "+%d.%m.%Y %T") : Disk detected: Saving MKV"
+      makemkvcon --profile=/config/profile.mmcp.xml --decrypt --minlength=15 mkv disc:"$DISK_NUM" all "$RIP_PATH" >>$LOG_FILE 2>&1
     fi
     echo "$(date "+%d.%m.%Y %T") : Finished ripping, begin transcoding"
-    echo "batch-transcode-video --debug --crop 1 --diff --input $DISK_PATH/$DISK_LABEL --output $STORAGE_TRANSCODES/$DISK_LABEL -- --no-auto-burn --add-subtitle all" >>$LOG_FILE 2>&1
-    batch-transcode-video --debug --crop 1 --diff --input "$DISK_PATH"/"$DISK_LABEL" --output "$STORAGE_TRANSCODES"/"$DISK_LABEL" -- --no-auto-burn --add-subtitle all >>$LOG_FILE 2>&1
-    echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
-    eject $DRIVE >>$LOG_FILE 2>&1
-    # permissions
-    chown -R nobody:users /out && chmod -R g+rw /out
-  fi
-
-  if [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
-    DISK_LABEL=$(echo $INFO | grep -o -P '(?<=",").*(?=",")')
-    DISK_PATH="$STORAGE_RIPS"/"$DISK_LABEL"
-    DISK_NUM=$(echo $INFO | grep $DRIVE | cut -c5)
-    mkdir -p "$DISK_PATH"
-    ALT_RIP="${RIPPER_DIR}/DVDrip.sh"
-    if [[ -f $ALT_RIP && -x $ALT_RIP ]]; then
-      echo "$(date "+%d.%m.%Y %T") : DVD detected: Executing $ALT_RIP"
-      $ALT_RIP "$DISK_NUM" "$DISK_PATH" >>$LOG_FILE 2>&1
-    else
-      # MKV
-      echo "$(date "+%d.%m.%Y %T") : DVD detected: Saving MKV"
-      makemkvcon --profile=/config/profile.mmcp.xml --decrypt --minlength=15 mkv disc:"$DISK_NUM" all "$DISK_PATH" >>$LOG_FILE 2>&1
-    fi
-    echo "$(date "+%d.%m.%Y %T") : Finished ripping, begin transcoding"
-    echo "batch-transcode-video --debug --crop 1 --diff --input $DISK_PATH/$DISK_LABEL --output $STORAGE_TRANSCODES/$DISK_LABEL -- --no-auto-burn --add-subtitle all" >>$LOG_FILE 2>&1
-    batch-transcode-video --debug --crop 1 --diff --input "$DISK_PATH"/"$DISK_LABEL" --output "$STORAGE_TRANSCODES"/"$DISK_LABEL" -- --no-auto-burn --add-subtitle all >>$LOG_FILE 2>&1
+    echo "batch-transcode-video --debug --crop 1 --diff --input "$RIP_PATH" --output "$TRANSCODE_PATH" -- --no-auto-burn --add-subtitle all" >>$LOG_FILE 2>&1
+    batch-transcode-video --debug --crop 1 --diff --input "$RIP_PATH" --output "$TRANSCODE_PATH" -- --no-auto-burn --add-subtitle all >>$LOG_FILE 2>&1
     echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
     eject $DRIVE >>$LOG_FILE 2>&1
     # permissions
