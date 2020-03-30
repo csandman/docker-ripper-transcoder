@@ -8,12 +8,12 @@ automatically using MakeMKV and then transcode them using transcode-video.
 This docker container is based on many different tools combined to make the
 ideal ripping and transcoding machine
 
-- [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool
-  to automatically rip movie files with make mkv
+- [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool to
+  automatically rip movie files with make mkv
   - [MakeMKV Profiles](https://gist.github.com/csandman/5638a54730869cf4addf3df43f7fc845) -
     Use FLAC profile for initial rip
-  - Download all video tracks (probably with 30 second cutoff OR the
-    shortest extra length from dvdcompare)
+  - Download all video tracks (probably with 30 second cutoff OR the shortest
+    extra length from dvdcompare)
 - [video_transcoding](https://github.com/donmelton/video_transcoding) - A
   library of tools to transcode videos to a reasonable format using handbrake
   - [docker](https://hub.docker.com/r/ntodd/video-transcoding/) - A docker
@@ -22,9 +22,11 @@ ideal ripping and transcoding machine
     A nodejs application for batch transcoding the movie and all extras
 
 ## Next Steps
-- Consolidate scripts for dvd/bluray
-- Add script for 
-- Hit the [tvdb api](https://developers.themoviedb.org/3/search/search-movies) to find proper movie title and year
+
+- [x] Consolidate scripts for dvd/bluray
+- Add script for
+- Hit the [tvdb api](https://developers.themoviedb.org/3/search/search-movies)
+  to find proper movie title and year
 - Rename folder to Movie Title (year)
 - Identify main movie file and rename to the same
 - Move all other tracks to a subfolder called 'Featurettes'
@@ -32,9 +34,14 @@ ideal ripping and transcoding machine
   - Search for the movie using results from tvdb and parse all extras lengths
   - match extras and rename files for all tracks searching the page in order
   - make a node cli tool with node to parse dvdcompare.net
-  - use [this script](https://superuser.com/questions/361329/how-can-i-get-the-length-of-a-video-file-from-the-console) to get the length of the movie file
-    - something like get-movie-extra-name --title="The Scrooge Mystery" --length=67
-- Add [environment variables](https://github.com/phusion/baseimage-docker#environment-variables) for custom options
+  - use
+    [this script](https://superuser.com/questions/361329/how-can-i-get-the-length-of-a-video-file-from-the-console)
+    to get the length of the movie file
+    - something like get-movie-extra-name --title="The Scrooge Mystery"
+      --length=67
+- Add
+  [environment variables](https://github.com/phusion/baseimage-docker#environment-variables)
+  for custom options
   - include subtitles
   - use x265
   - include extras
@@ -69,18 +76,18 @@ services:
 
 ## Tools and Ideas
 
-- [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool
-  to automatically rip movie files with make mkv
+- [docker-ripper](https://github.com/rix1337/docker-ripper) - an initial tool to
+  automatically rip movie files with make mkv
   - [MakeMKV Profiles](https://gist.github.com/csandman/5638a54730869cf4addf3df43f7fc845) -
     Use FLAC profile for initial rip
-  - Download all video tracks (probably with 30 second cutoff OR the
-    shortest extra length from dvdcompare)
-- [http://www.dvdcompare.net/index.php](dvdcompare.net) - Build a web scraper
-  to parse the track lengths of each extra
-  - Use something like mediainfo to get track length of each file in
-    extracted extras
-  - Perhaps use metadata from the bluray disk to determine the
-    language/country for dvd compare
+  - Download all video tracks (probably with 30 second cutoff OR the shortest
+    extra length from dvdcompare)
+- [http://www.dvdcompare.net/index.php](dvdcompare.net) - Build a web scraper to
+  parse the track lengths of each extra
+  - Use something like mediainfo to get track length of each file in extracted
+    extras
+  - Perhaps use metadata from the bluray disk to determine the language/country
+    for dvd compare
 - [Automatic Ripping Machine](https://github.com/automatic-ripping-machine/automatic-ripping-machine) -
   Has some interesting tools for identifying the name and language of a movie
 - [video_transcoding](https://github.com/donmelton/video_transcoding) - A
@@ -167,9 +174,8 @@ not responsible if anything breaks. For more information see
 
 - [Idea based on Discbox by kingeek](http://kinggeek.co.uk/projects/item/61-discbox-linux-bash-script-to-automatically-rip-cds-dvds-and-blue-ray-with-multiple-optical-drives-and-no-user-intervention)
 
-  Kingeek uses proper tools (like udev) to detect disk types. This is
-  impossible in docker right now. Hence, most of the work is done by MakeMKV
-  (see above).
+  Kingeek uses proper tools (like udev) to detect disk types. This is impossible
+  in docker right now. Hence, most of the work is done by MakeMKV (see above).
 
 - [MakeMKV Setup by tobbenb](https://github.com/tobbenb/docker-containers)
 

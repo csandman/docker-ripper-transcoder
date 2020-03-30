@@ -82,6 +82,14 @@ while true; do
       makemkvcon --profile=/config/profile.mmcp.xml --decrypt --minlength=15 mkv disc:"$DISK_NUM" all "$RIP_PATH" >>$LOG_FILE 2>&1
     fi
     echo "$(date "+%d.%m.%Y %T") : Finished ripping, begin transcoding"
+    for FILE in $RIP_PATH; do
+      echo "Processing $FILE file..." >>$LOG_FILE 2>&1
+      TIMESTAMP=$"$(ffprobe -i $FILE -show_entries format=duration -v quiet -of csv="p=0")"
+      EXTRA_TITLE=$"$(get-movie-extra-name "$DISK_LABEL" $TIMESTAMP)"
+      if ! [ "$EXTRA_TITLE" = '' ]; then
+        mv "$FILE" "$RIP_PATH/$EXTRA_TITLE.mkv"
+      fi
+    done
     echo "batch-transcode-video --debug --crop 1 --diff --input "$RIP_PATH" --output "$TRANSCODE_PATH" -- --no-auto-burn --add-subtitle all" >>$LOG_FILE 2>&1
     batch-transcode-video --debug --crop 1 --diff --input "$RIP_PATH" --output "$TRANSCODE_PATH" -- --no-auto-burn --add-subtitle all >>$LOG_FILE 2>&1
     echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"

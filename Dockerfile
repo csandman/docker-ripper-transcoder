@@ -46,7 +46,7 @@ RUN set -ex \
   # Install application dependencies
   && rm -rf /var/lib/apt/lists/* \
   && gem install video_transcoding \
-  && npm install batch-transcode-video -g 
+  && npm install batch-transcode-video get-movie-extra-name -g 
 
 # MakeMKV setup by github.com/tobbenb
 RUN chmod +x /tmp/install/install.sh && sleep 1 && /tmp/install/install.sh && rm -r /tmp/install
