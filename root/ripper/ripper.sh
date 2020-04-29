@@ -66,7 +66,7 @@ while true; do
     echo "$(date "+%d.%m.%Y %T") : Disc still loading"
   fi
 
-  if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' || "$DVD" = 'DRV:0,2,999,1,"' ]; then
+  if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' ] || [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
     DISK_LABEL=$(echo $INFO | grep -o -P '(?<=",").*(?=",")')
     RIP_PATH="$STORAGE_RIPS"/"$DISK_LABEL"
     TRANSCODE_PATH="$STORAGE_TRANSCODES"/"$DISK_LABEL"
